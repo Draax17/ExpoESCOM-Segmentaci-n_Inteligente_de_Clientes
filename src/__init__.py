@@ -1,0 +1,1 @@
+"""Cliente segmentation project package."""
