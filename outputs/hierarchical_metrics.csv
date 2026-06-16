@@ -1,0 +1,2 @@
+model,n_clusters,silhouette,davies_bouldin,calinski_harabasz
+hierarchical,4,0.13914984826048452,1.8145290302438986,485.2949007064278

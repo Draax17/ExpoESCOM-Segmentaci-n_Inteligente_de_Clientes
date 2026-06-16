@@ -1,0 +1,2 @@
+model,n_clusters,silhouette,davies_bouldin,calinski_harabasz
+kmeans,4,0.1752903797151965,1.8169275213968041,595.4739155326225
