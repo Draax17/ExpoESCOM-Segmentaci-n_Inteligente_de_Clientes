@@ -109,3 +109,134 @@ plt.savefig('/kaggle/working/01_eda_overview.png',
             dpi=150, bbox_inches='tight')
 plt.show()
 print("EDA chart saved")
+
+# Select features for clustering
+# We use behavioural features — not demographic ones
+features = ['Income', 'Age', 'Total_Spent', 'Total_Purchases', 
+            'Total_Children', 'Tenure', 'Recency',
+            'NumWebVisitsMonth']
+
+# Extract selected features
+X = df[features].copy()
+
+# Remove outliers in Income (anyone earning more than 200k is an outlier)
+X = X[X['Income'] < 200000]
+df_clean = df[df['Income'] < 200000].copy()
+
+print(f"Customers after removing outliers: {len(X)}")
+
+# Scale the features — K-Means is distance based
+# so all features need to be on the same scale
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+
+print(f"Features selected: {features}")
+print(f"\nScaling complete — mean: {X_scaled.mean():.2f}, std: {X_scaled.std():.2f}")
+
+# Baseline: test different K values
+inertias = []
+silhouette_scores = []
+db_scores = []
+ch_scores = []
+k_range = range(2, 11)
+
+print("Testing different number of clusters for baseline model...")
+for k in k_range:
+    kmeans = KMeans(n_clusters=k, random_state=42, n_init=10)
+    labels = kmeans.fit_predict(X_scaled)
+
+    inertias.append(kmeans.inertia_)
+    silhouette_scores.append(silhouette_score(X_scaled, labels))
+    db_scores.append(davies_bouldin_score(X_scaled, labels))
+    ch_scores.append(calinski_harabasz_score(X_scaled, labels))
+
+baseline_results_df = pd.DataFrame({
+    'k': list(k_range),
+    'inertia': inertias,
+    'silhouette': silhouette_scores,
+    'davies_bouldin': db_scores,
+    'calinski_harabasz': ch_scores
+})
+
+print("Baseline clustering results:")
+display(baseline_results_df)
+
+fig, axes = plt.subplots(1, 3, figsize=(18, 5))
+
+axes[0].plot(baseline_results_df['k'], baseline_results_df['silhouette'], marker='o')
+axes[0].set_title('Baseline Silhouette Score')
+axes[0].set_xlabel('k')
+axes[0].set_ylabel('Silhouette')
+
+axes[1].plot(baseline_results_df['k'], baseline_results_df['davies_bouldin'], marker='o', color='orange')
+axes[1].set_title('Baseline Davies-Bouldin Index')
+axes[1].set_xlabel('k')
+axes[1].set_ylabel('DB Index')
+
+axes[2].plot(baseline_results_df['k'], baseline_results_df['calinski_harabasz'], marker='o', color='green')
+axes[2].set_title('Baseline Calinski-Harabasz Score')
+axes[2].set_xlabel('k')
+axes[2].set_ylabel('CH Score')
+
+plt.tight_layout()
+plt.show()
+
+#K-means k=4
+# Train final K-Means model with k=4
+kmeans = KMeans(n_clusters=4, random_state=42, n_init=10)
+clusters = kmeans.fit_predict(X_scaled)
+
+# Add cluster labels back to dataframe
+df_clean = df_clean[df_clean['Income'] < 200000].copy()
+df_clean['Cluster'] = clusters
+
+# Count customers in each cluster
+print("Customers per cluster:")
+print(df_clean['Cluster'].value_counts().sort_index())
+
+# Profile each cluster
+print("\nCluster Profiles:")
+profile = df_clean.groupby('Cluster')[features].mean().round(2)
+print(profile)
+
+
+# Baseline evaluation metrics
+baseline_silhouette = silhouette_score(X_scaled, clusters)
+baseline_db = davies_bouldin_score(X_scaled, clusters)
+baseline_ch = calinski_harabasz_score(X_scaled, clusters)
+
+print("\nBaseline final model metrics (k=4):")
+print(f"Silhouette Score: {baseline_silhouette:.3f}")
+print(f"Davies-Bouldin Index: {baseline_db:.3f}")
+print(f"Calinski-Harabasz Score: {baseline_ch:.3f}")
+
+
+# Baseline evaluation metrics
+baseline_silhouette = silhouette_score(X_scaled, clusters)
+baseline_db = davies_bouldin_score(X_scaled, clusters)
+baseline_ch = calinski_harabasz_score(X_scaled, clusters)
+
+print("\nBaseline final model metrics (k=4):")
+print(f"Silhouette Score: {baseline_silhouette:.3f}")
+print(f"Davies-Bouldin Index: {baseline_db:.3f}")
+print(f"Calinski-Harabasz Score: {baseline_ch:.3f}")
+
+fig, axes = plt.subplots(1, 3, figsize=(18, 5))
+
+axes[0].plot(baseline_results_df['k'], baseline_results_df['silhouette'], marker='o')
+axes[0].set_title('Baseline Silhouette Score')
+axes[0].set_xlabel('k')
+axes[0].set_ylabel('Silhouette')
+
+axes[1].plot(baseline_results_df['k'], baseline_results_df['davies_bouldin'], marker='o', color='orange')
+axes[1].set_title('Baseline Davies-Bouldin Index')
+axes[1].set_xlabel('k')
+axes[1].set_ylabel('DB Index')
+
+axes[2].plot(baseline_results_df['k'], baseline_results_df['calinski_harabasz'], marker='o', color='green')
+axes[2].set_title('Baseline Calinski-Harabasz Score')
+axes[2].set_xlabel('k')
+axes[2].set_ylabel('CH Score')
+
+plt.tight_layout()
+plt.show()
