@@ -1,8 +1,0 @@
-{
-  "python.defaultInterpreterPath": "python",
-  "files.exclude": {
-    "**/__pycache__": true,
-    "**/.pytest_cache": true
-  },
-  "python.analysis.typeCheckingMode": "basic"
-}
