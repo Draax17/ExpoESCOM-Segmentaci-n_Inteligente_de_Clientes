@@ -196,6 +196,9 @@ axes[2].set_ylabel('CH Score')
 
 plt.tight_layout()
 plt.show()
+plt.tight_layout()
+plt.savefig(OUTPUT_DIR / '02_metricas-codo.png', 
+            dpi=150, bbox_inches='tight')
 
 # #K-means k=4
 # # Train final K-Means model with k=4
