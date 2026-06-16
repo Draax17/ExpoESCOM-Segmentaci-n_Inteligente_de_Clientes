@@ -19,7 +19,7 @@ sns.set_palette('Set2')
 print("All libraries loaded successfully")
 
 # Importing the dataset
-df = pd.read_csv('/kaggle/input/datasets/imakash3011/customer-personality-analysis/marketing_campaign.csv', sep='\t')
+df = pd.read_csv('data/marketing_campaign_kaggle.csv', sep='\t')
 print("Dataset loaded successfully")
 
 print(f"Dataset shape: {df.shape}")
