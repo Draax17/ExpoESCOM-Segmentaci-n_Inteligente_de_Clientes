@@ -1,3 +1,5 @@
+from pathlib import Path
+
 # Import all required libraries
 import pandas as pd
 import numpy as np
@@ -16,11 +18,18 @@ warnings.filterwarnings('ignore')
 plt.style.use('seaborn-v0_8-whitegrid')
 sns.set_palette('Set2')
 
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+DATA_PATH = PROJECT_ROOT / 'data' / 'marketing_campaign.csv'
+if not DATA_PATH.exists():
+    DATA_PATH = PROJECT_ROOT / 'data' / 'marketing_campaign_kaggle.csv'
+
+OUTPUT_DIR = PROJECT_ROOT / 'outputs'
+OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+
 print("All libraries loaded successfully")
 
 # Importing the dataset
-#df = pd.read_csv('data/marketing_campaign_kaggle.csv', sep='\t')
-df = pd.read_csv('data/marketing_campaign.csv', sep='\t')
+df = pd.read_csv(DATA_PATH, sep='\t')
 print("Dataset loaded successfully")
 
 print(f"Dataset shape: {df.shape}")
@@ -107,7 +116,7 @@ axes[1,1].set_xlabel('Income ($)')
 axes[1,1].set_ylabel('Total Spent ($)')
 
 plt.tight_layout()
-plt.savefig('/kaggle/working/01_eda_overview.png', 
+plt.savefig(OUTPUT_DIR / '01_eda_overview.png', 
             dpi=150, bbox_inches='tight')
 plt.show()
 print("EDA chart saved")
