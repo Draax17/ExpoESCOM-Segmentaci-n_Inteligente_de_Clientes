@@ -134,6 +134,11 @@ X = df[features].copy()
 X = X[X['Income'] < 200000]
 df_clean = df[df['Income'] < 200000].copy()
 
+clean_features_df = df_clean[features].copy()
+clean_csv_path = OUTPUT_DIR / 'marketing_campaign_clean_features.csv'
+clean_features_df.to_csv(clean_csv_path, index=False)
+print(f"Clean feature dataset saved to: {clean_csv_path}")
+
 print(f"Customers after removing outliers: {len(X)}")
 
 # Scale the features — K-Means is distance based
